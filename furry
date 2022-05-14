@@ -1,0 +1,130 @@
+#!/usr/bin/env lua
+-- (C) 2022 Flecken-chan
+-- Dis progwam comes with ABSOLUTELY NO WAWWANTY
+-- Dis iz fwee software, and your'e welcome to redistwibute it under certain conditions
+-- MIT License
+
+local u = {
+	"u", "ü", "ǘ", "ú", "ù", "ǜ", "o", "ö", "ø", "ó", "ò", "ð",
+	"U", "Ü", "Ǘ", "Ú", "Ù", "Ǜ", "O", "Ö", "Ø", "Ó", "Ò", 
+}
+
+local w = {
+	"w", "W",
+}
+
+local words = {"nya", "rawr", "ara", "awoo"}
+
+math.randomseed(69420)
+
+function string:randomcase()
+	local s = ""
+
+	for i = 1, #self do
+		local c = self:sub(i, i)
+
+		if math.random() < 0.5 then
+			c = c:upper()
+		end
+
+		s = s .. c
+	end
+
+	return s
+end
+
+local encode = {}
+local decode = {}
+
+for i = 0, 255 do
+	local c
+
+	repeat
+		if math.random() < 0.5 then
+			c =
+				u[math.random(#u)] ..
+				w[math.random(#w)] ..
+				u[math.random(#u)]
+		else
+			c = words[math.random(#words)]:randomcase()
+		end
+
+		if math.random() < 0.5 then
+			c = c .. "~"
+		end
+	until not decode[c]
+
+	encode[i] = c
+	decode[c] = i
+end
+
+if arg[1] == "encode" then
+	local buf
+	local num = 0
+
+	while true do
+		local c = io.read(1)
+
+		if buf and c ~= buf then
+			local e = encode[buf:byte(1)] .. " "
+		
+			if num == 1 then
+				io.write(e)
+			else
+				io.write("" .. num .. "x " .. e)
+			end
+
+			num = 1
+		else
+			num = num + 1
+		end
+
+		buf = c
+
+		if not c then
+			break
+		end
+	end
+elseif arg[1] == "decode" then
+	local buf = ""
+	local num = 1
+
+	while true do
+		local c = io.read(1)
+
+		if not c then
+			break
+		end
+
+		if c == " " then
+			local n = buf:sub(-1) == "x" and tonumber(buf:sub(1, -2))
+
+			if n then
+				num = n
+			else
+				if not decode[buf] then
+					error("decode error")
+				end
+			
+				local d = string.char(decode[buf])
+
+				for i = 1, num do
+					io.write(d)
+				end
+
+				num = 1
+			end
+
+			buf = ""
+		else
+			buf = buf .. c
+		end
+	end
+
+	if buf ~= "" then
+		error("trailing data")
+	end
+else
+	print("Usage: " .. arg[0] .. " encode|decode")
+	os.exit(1)
+end
