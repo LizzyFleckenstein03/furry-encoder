@@ -2,7 +2,6 @@
 -- (C) 2022 Flecken-chan
 -- Dis progwam comes with ABSOLUTELY NO WAWWANTY
 -- Dis iz fwee software, and your'e welcome to redistwibute it under certain conditions
--- MIT License
 
 local u = {
 	"u", "ü", "ǘ", "ú", "ù", "ǜ", "o", "ö", "ø", "ó", "ò", "ð",
